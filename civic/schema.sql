@@ -7,6 +7,8 @@
 CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
+  username TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
   phone TEXT NOT NULL,
   role TEXT NOT NULL CHECK (role IN ('user', 'admin', 'worker')),
   language TEXT NOT NULL DEFAULT 'en',
@@ -61,3 +63,7 @@ ALTER TABLE reports ADD COLUMN IF NOT EXISTS worker_after_pic_url TEXT;
 ALTER TABLE reports ADD COLUMN IF NOT EXISTS worker_action_lat DOUBLE PRECISION;
 ALTER TABLE reports ADD COLUMN IF NOT EXISTS worker_action_lng DOUBLE PRECISION;
 ALTER TABLE reports ADD COLUMN IF NOT EXISTS worker_action_time TIMESTAMPTZ;
+
+-- User Registration additions
+ALTER TABLE users ADD COLUMN IF NOT EXISTS username TEXT UNIQUE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password TEXT;
