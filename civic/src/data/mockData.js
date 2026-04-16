@@ -124,6 +124,29 @@ export async function getReportedIssues() {
   return getIssuesByStatus('Reported');
 }
 
+export async function getWorkerIssues(workerName) {
+  const { data, error } = await supabase
+    .from('reports')
+    .select('*')
+    .eq('assigned_worker', workerName)
+    .order('created_at', { ascending: false });
+
+  if (error) { console.error('getWorkerIssues error:', error); return []; }
+  return data || [];
+}
+
+export async function updateWorkerTask(issueId, updates) {
+  const { data, error } = await supabase
+    .from('reports')
+    .update(updates)
+    .eq('id', issueId)
+    .select()
+    .single();
+
+  if (error) { console.error('updateWorkerTask error:', error); throw error; }
+  return data;
+}
+
 // --- Analytics counts ---
 
 export async function getAnalytics() {
@@ -306,24 +329,39 @@ export async function checkDuplicate(location, issueType) {
 export function simulateAI(description) {
   const desc = (description || '').toLowerCase();
 
-  // Issue type detection based on keywords
-  let issueType = 'Pothole'; // default
-  if (desc.includes('garbage') || desc.includes('trash') || desc.includes('waste') || desc.includes('dump')) {
-    issueType = 'Garbage';
-  } else if (desc.includes('water') || desc.includes('leak') || desc.includes('pipe') || desc.includes('flood')) {
-    issueType = 'Water Leakage';
-  } else if (desc.includes('light') || desc.includes('lamp') || desc.includes('dark') || desc.includes('street light')) {
-    issueType = 'Streetlight';
-  } else if (desc.includes('road') || desc.includes('crack') || desc.includes('broken road') || desc.includes('surface')) {
-    issueType = 'Road Damage';
-  } else if (desc.includes('pothole') || desc.includes('hole') || desc.includes('pit')) {
+  // Advanced AI Issue Type detection based on an expanded set of keyword patterns
+  let issueType = 'Other'; // default fallback
+  let categorizedTags = [];
+
+  const garbageTerms = ['garbage', 'trash', 'waste', 'dump', 'overflow', 'litter', 'debris', 'rubbish', 'plastic', 'bin full'];
+  const waterTerms = ['water', 'leak', 'pipe', 'flood', 'drain', 'sewer', 'blockage', 'burst pipe', 'overflowing drain', 'sludge'];
+  const lightTerms = ['light', 'lamp', 'dark', 'street light', 'broken bulb', 'no illumination', 'blackout', 'flickering'];
+  const roadTerms = ['road', 'crack', 'broken road', 'surface', 'asphalt', 'paved', 'uneven', 'damage'];
+  const potholeTerms = ['pothole', 'hole', 'pit', 'crater', 'rut'];
+
+  if (potholeTerms.some(w => desc.includes(w))) {
     issueType = 'Pothole';
+    categorizedTags = ['Road Safety', 'Suspension Risk'];
+  } else if (garbageTerms.some(w => desc.includes(w))) {
+    issueType = 'Garbage';
+    categorizedTags = ['Public Health', 'Sanitation'];
+  } else if (waterTerms.some(w => desc.includes(w))) {
+    issueType = 'Water Leakage';
+    categorizedTags = ['Resource Waste', 'Plumbing', 'Erosion Risk'];
+  } else if (lightTerms.some(w => desc.includes(w))) {
+    issueType = 'Streetlight';
+    categorizedTags = ['Public Safety', 'Visibility'];
+  } else if (roadTerms.some(w => desc.includes(w))) {
+    issueType = 'Road Damage';
+    categorizedTags = ['Infrastructure Decay', 'Traffic Flow'];
+  } else {
+    issueType = 'Pothole'; // Fallback if it's completely generic but we need one of our types
   }
 
-  // Severity detection based on keywords
+  // AI-driven Severity detection
   let severity = 'Low';
-  const highWords = ['big', 'danger', 'accident', 'severe', 'major', 'critical', 'hazard', 'emergency', 'urgent', 'serious', 'large'];
-  const medWords = ['moderate', 'problem', 'medium', 'concern', 'noticeable', 'significant'];
+  const highWords = ['big', 'danger', 'accident', 'severe', 'major', 'critical', 'hazard', 'emergency', 'urgent', 'serious', 'large', 'deep', 'huge', 'fatal', 'injury'];
+  const medWords = ['moderate', 'problem', 'medium', 'concern', 'noticeable', 'significant', 'growing', 'unpleasant', 'smell', 'inconvenience'];
 
   if (highWords.some(w => desc.includes(w))) {
     severity = 'High';
@@ -331,9 +369,11 @@ export function simulateAI(description) {
     severity = 'Medium';
   }
 
+  // Simulated AI Output structure that provides deeper context for workers
   const confidence = (85 + Math.random() * 14).toFixed(1);
+  const detailedAnalysis = `The AI model detected features indicative of ${issueType} with ${confidence}% confidence. Identified attributes point to a ${severity} severity level based on visual and textual contextual clues.`;
 
-  return { issueType, severity, confidence };
+  return { issueType, severity, confidence, categorizedTags, detailedAnalysis };
 }
 
 // --- Locations list (for UI dropdowns / auto-detect) ---

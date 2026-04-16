@@ -8,7 +8,7 @@ CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   phone TEXT NOT NULL,
-  role TEXT NOT NULL CHECK (role IN ('user', 'admin')),
+  role TEXT NOT NULL CHECK (role IN ('user', 'admin', 'worker')),
   language TEXT NOT NULL DEFAULT 'en',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -56,3 +56,8 @@ ALTER TABLE reports ADD COLUMN IF NOT EXISTS location_lat DOUBLE PRECISION;
 ALTER TABLE reports ADD COLUMN IF NOT EXISTS location_lng DOUBLE PRECISION;
 ALTER TABLE reports ADD COLUMN IF NOT EXISTS assigned_worker TEXT;
 ALTER TABLE reports ADD COLUMN IF NOT EXISTS completion_proof_url TEXT;
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS worker_before_pic_url TEXT;
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS worker_after_pic_url TEXT;
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS worker_action_lat DOUBLE PRECISION;
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS worker_action_lng DOUBLE PRECISION;
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS worker_action_time TIMESTAMPTZ;

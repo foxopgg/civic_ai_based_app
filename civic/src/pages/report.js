@@ -485,6 +485,18 @@ async function showAIProcessing(description, imageFile, locationData) {
           <span class="ai-result-label">${t('aiConfidence')}</span>
           <span class="ai-result-value">${aiResult.confidence}%</span>
         </div>
+        <div class="ai-result-item" style="flex-direction: column; align-items: flex-start;">
+          <span class="ai-result-label" style="margin-bottom: 8px">Detailed Analysis</span>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">${aiResult.detailedAnalysis || 'Analysis complete.'}</p>
+        </div>
+        ${aiResult.categorizedTags ? `
+        <div class="ai-result-item" style="flex-direction: column; align-items: flex-start; margin-top: 8px;">
+          <span class="ai-result-label" style="margin-bottom: 8px">Worker Tags</span>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            ${aiResult.categorizedTags.map(tag => `<span style="background: var(--surface-hover); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; color: var(--primary)">${tag}</span>`).join('')}
+          </div>
+        </div>
+        ` : ''}
 
         <button class="btn btn-primary btn-lg" style="width: 100%; margin-top: 20px" id="btn-ai-continue">
           ${t('aiContinue')}

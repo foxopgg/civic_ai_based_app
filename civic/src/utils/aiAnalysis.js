@@ -54,8 +54,8 @@ Severity guidelines:
 - Medium: Noticeable problem, moderate inconvenience, needs attention within days
 - Low: Minor cosmetic issue, small area affected, low public impact
 
-Respond ONLY with valid JSON — no markdown fences, no explanation:
-{"issueType": "...", "severity": "...", "confidence": 85.0}`
+Respond ONLY with valid JSON — no markdown fences, no explanation. Output must follow this structure:
+{"issueType": "...", "severity": "...", "confidence": 85.0, "categorizedTags": ["Public Safety", "Infrastructure"], "detailedAnalysis": "1-2 sentence detailed reasoning."}`
               }
             ]
           }],
@@ -92,9 +92,17 @@ Respond ONLY with valid JSON — no markdown fences, no explanation:
       : 'Medium';
 
     const confidence = Math.min(99, Math.max(60, parseFloat(parsed.confidence) || 85)).toFixed(1);
+    
+    // Add default values if the model omits them
+    const categorizedTags = Array.isArray(parsed.categorizedTags) && parsed.categorizedTags.length > 0 
+      ? parsed.categorizedTags 
+      : ['AI Extracted'];
+    const detailedAnalysis = typeof parsed.detailedAnalysis === 'string' && parsed.detailedAnalysis.length > 0 
+      ? parsed.detailedAnalysis 
+      : 'Visual inspection matched known damage patterns.';
 
-    console.log('🤖 AI Analysis result:', { issueType, severity, confidence });
-    return { issueType, severity, confidence };
+    console.log('🤖 AI Analysis result:', { issueType, severity, confidence, categorizedTags, detailedAnalysis });
+    return { issueType, severity, confidence, categorizedTags, detailedAnalysis };
   } catch (err) {
     console.error('🤖 AI image analysis failed:', err);
     return null;

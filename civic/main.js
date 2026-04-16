@@ -14,6 +14,8 @@ import { renderConfirmation } from './src/pages/confirmation.js';
 import { renderTracking } from './src/pages/tracking.js';
 import { renderAdmin } from './src/pages/admin.js';
 import { renderTaskManagement } from './src/pages/taskManagement.js';
+import { renderWorkerDashboard } from './src/pages/workerDashboard.js';
+import { renderWorkerTask } from './src/pages/workerTask.js';
 
 // Register all routes
 registerRoute('login', () => renderLogin());
@@ -23,6 +25,8 @@ registerRoute('confirmation', (data) => renderConfirmation(data));
 registerRoute('tracking', (data) => renderTracking(data));
 registerRoute('admin', () => renderAdmin());
 registerRoute('task', (data) => renderTaskManagement(data));
+registerRoute('worker-dashboard', () => renderWorkerDashboard());
+registerRoute('worker-task', (data) => renderWorkerTask(data));
 
 // Initialize Application
 function init() {
@@ -34,6 +38,8 @@ function init() {
     // Redirect based on role
     if (user.role === 'admin') {
       navigate('admin');
+    } else if (user.role === 'worker') {
+      navigate('worker-dashboard');
     } else {
       navigate('dashboard');
     }

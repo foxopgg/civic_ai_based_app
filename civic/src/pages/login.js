@@ -47,6 +47,10 @@ export function renderLogin() {
                 ${icons.user}
                 <span>${t('roleUser')}</span>
               </button>
+              <button type="button" class="role-option" data-role="worker" id="role-worker">
+                ${icons.camera}
+                <span>Worker</span>
+              </button>
               <button type="button" class="role-option" data-role="admin" id="role-admin">
                 ${icons.admin}
                 <span>${t('roleAdmin')}</span>
@@ -125,6 +129,9 @@ function attachLoginListeners() {
     if (selectedRole === 'admin') {
       document.getElementById('role-user')?.classList.remove('active');
       document.getElementById('role-admin')?.classList.add('active');
+    } else if (selectedRole === 'worker') {
+      document.getElementById('role-user')?.classList.remove('active');
+      document.getElementById('role-worker')?.classList.add('active');
     }
   });
 
@@ -289,6 +296,8 @@ function attachLoginListeners() {
         // Redirect based on role
         if (selectedRole === 'admin') {
           navigate('admin');
+        } else if (selectedRole === 'worker') {
+          navigate('worker-dashboard');
         } else {
           navigate('dashboard');
         }

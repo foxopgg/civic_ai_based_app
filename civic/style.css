@@ -3,29 +3,29 @@
    ============================================ */
 
 :root {
-  --primary: #2F6B3F;
-  --primary-dark: #1E4A2B;
-  --primary-light: #3D8A52;
-  --secondary: #4CAF50;
-  --secondary-light: #66BB6A;
-  --accent: #A5D6A7;
-  --accent-light: #C8E6C9;
-  --bg: #F5FFF7;
-  --bg-card: #FFFFFF;
-  --bg-dark: #E8F5E9;
-  --text-primary: #1B2E1F;
-  --text-secondary: #4A6B52;
-  --text-muted: #7A9982;
+  --primary: #10B981;
+  --primary-dark: #059669;
+  --primary-light: #34D399;
+  --secondary: #3B82F6;
+  --secondary-light: #60A5FA;
+  --accent: #F59E0B;
+  --accent-light: #FCD34D;
+  --bg: #0F172A;
+  --bg-card: rgba(30, 41, 59, 0.7);
+  --bg-dark: #020617;
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
   --text-light: #FFFFFF;
-  --border: #D4E8D8;
-  --border-light: #E8F5EA;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-light: rgba(255, 255, 255, 0.05);
 
-  --severity-high: #E53935;
-  --severity-high-bg: #FFEBEE;
-  --severity-medium: #F9A825;
-  --severity-medium-bg: #FFF8E1;
-  --severity-low: #43A047;
-  --severity-low-bg: #E8F5E9;
+  --severity-high: #EF4444;
+  --severity-high-bg: rgba(239, 68, 68, 0.1);
+  --severity-medium: #F59E0B;
+  --severity-medium-bg: rgba(245, 158, 11, 0.1);
+  --severity-low: #10B981;
+  --severity-low-bg: rgba(16, 185, 129, 0.1);
 
   --status-reported: #1976D2;
   --status-assigned: #F57C00;
@@ -158,7 +158,7 @@ body {
   z-index: 1000;
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(12px);
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(15, 23, 42, 0.85);
 }
 
 .navbar-brand {
@@ -2173,3 +2173,46 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================
+   Glassmorphism & New Utilities
+   ============================================ */
+.card, .login-card, .ai-card, .dashboard-hero {
+  background: var(--bg-card) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+  color: var(--text-primary);
+}
+
+.form-input, .form-select, .form-textarea {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-primary) !important;
+}
+
+.form-input::placeholder, .form-textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.navbar {
+  border-bottom: 1px solid var(--border) !important;
+  background: rgba(15, 23, 42, 0.85) !important;
+}
+
+body {
+  background: radial-gradient(circle at top right, #1E293B, #0F172A) !important;
+}
+
+.login-page {
+  background: radial-gradient(circle at top right, #1E293B, #0F172A) !important;
+}
+
+/* Update text colors to be readable on dark */
+h1, h2, h3, h4, h5, h6, .page-title, .card-title, .login-header h1 {
+  color: var(--text-primary) !important;
+}
+.text-muted, .card-subtitle, .page-subtitle, .login-header p {
+  color: var(--text-muted) !important;
+}
+
