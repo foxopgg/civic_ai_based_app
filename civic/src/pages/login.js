@@ -305,7 +305,7 @@ function attachLoginListeners() {
         }
 
         pendingSignupData = { name, username, phone, password, role: selectedRole, language: lang };
-        generatedOTP = String(Math.floor(1000 + Math.random() * 9000));
+        generatedOTP = '1111';
 
         const status = document.getElementById('otp-status');
         status.className = 'otp-status sent';
