@@ -58,6 +58,11 @@ export function renderLogin() {
             </div>
           </div>
 
+          <div class="form-group" id="password-group" style="display: none">
+            <label class="form-label" for="login-password">Password / Access Code</label>
+            <input type="password" class="form-input" id="login-password" placeholder="Required for Admin/Worker" />
+          </div>
+
           <div class="form-group">
             <label class="form-label" for="login-language">${t('languageLabel')}</label>
             <select class="form-select" id="login-language">
@@ -112,6 +117,11 @@ function attachLoginListeners() {
       document.querySelectorAll('.role-option').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       selectedRole = btn.getAttribute('data-role');
+      
+      const pwdGroup = document.getElementById('password-group');
+      if (pwdGroup) {
+        pwdGroup.style.display = (selectedRole === 'admin' || selectedRole === 'worker') ? 'block' : 'none';
+      }
     });
   });
 
@@ -129,9 +139,13 @@ function attachLoginListeners() {
     if (selectedRole === 'admin') {
       document.getElementById('role-user')?.classList.remove('active');
       document.getElementById('role-admin')?.classList.add('active');
+      const pwdGroup = document.getElementById('password-group');
+      if (pwdGroup) pwdGroup.style.display = 'block';
     } else if (selectedRole === 'worker') {
       document.getElementById('role-user')?.classList.remove('active');
       document.getElementById('role-worker')?.classList.add('active');
+      const pwdGroup = document.getElementById('password-group');
+      if (pwdGroup) pwdGroup.style.display = 'block';
     }
   });
 
@@ -139,6 +153,16 @@ function attachLoginListeners() {
   sendOtpBtn.addEventListener('click', async () => {
     const name = document.getElementById('login-name').value.trim();
     const phone = document.getElementById('login-phone').value.trim();
+    const password = document.getElementById('login-password')?.value.trim() || '';
+
+    if (selectedRole === 'admin' && !password.endsWith('admin')) {
+      showNotification('Admin password must end with "admin"', 'warning');
+      return;
+    }
+    if (selectedRole === 'worker' && !password.endsWith('worker')) {
+      showNotification('Worker password must end with "worker"', 'warning');
+      return;
+    }
 
     if (!name || !phone) {
       showNotification(t('fillAllFields'), 'warning');

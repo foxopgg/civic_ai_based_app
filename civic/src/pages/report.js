@@ -95,15 +95,40 @@ export function renderReportPage() {
   attachNavListeners();
   attachReportListeners(currentLocation);
 
-  // Auto-detect location after 1.5s
+  // Auto-detect location using Geolocation API
   setTimeout(() => {
     const locInput = document.getElementById('location-input');
     const locCoords = document.getElementById('location-coords');
-    if (locInput && locCoords) {
-      locInput.value = currentLocation.name;
-      locCoords.textContent = `${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}`;
+    
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          currentLocation.lat = position.coords.latitude;
+          currentLocation.lng = position.coords.longitude;
+          currentLocation.name = "My Current Location";
+          
+          if (locInput && locCoords) {
+            locInput.value = currentLocation.name;
+            locCoords.textContent = `${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}`;
+          }
+          showNotification('Location detected successfully', 'success');
+        },
+        (error) => {
+          console.warn('Geolocation failed or denied, using default:', error.message);
+          if (locInput && locCoords) {
+            locInput.value = currentLocation.name;
+            locCoords.textContent = `${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}`;
+          }
+        },
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      );
+    } else {
+      if (locInput && locCoords) {
+        locInput.value = currentLocation.name;
+        locCoords.textContent = `${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}`;
+      }
     }
-  }, 1500);
+  }, 1000);
 }
 
 // ------------------------------------
