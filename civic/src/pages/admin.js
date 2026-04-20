@@ -6,7 +6,7 @@
 
 import { t } from '../utils/i18n.js';
 import { navigate } from '../utils/router.js';
-import { getIssues, getAnalytics, getReportedIssues, getActiveIssues, getCompletedIssues, getIssueTypes, assignWorker, getWorkers, updateIssueStatus } from '../data/mockData.js';
+import { getIssues, getAnalytics, getReportedIssues, getActiveIssues, getCompletedIssues, getIssueTypes, assignWorker, getWorkers, updateIssueStatus, getUser } from '../data/mockData.js';
 import { renderNavbar, attachNavListeners } from '../components/navbar.js';
 import { showNotification } from '../components/notification.js';
 import { icons } from '../utils/icons.js';
@@ -243,6 +243,12 @@ export function cleanupAdminRealtime() {
 
 export async function renderAdmin() {
   const app = document.getElementById('app');
+  const user = getUser();
+  
+  if (!user || user.role !== 'admin') {
+    navigate('login');
+    return;
+  }
 
   // Cleanup previous instances
   cleanupAdminRealtime();

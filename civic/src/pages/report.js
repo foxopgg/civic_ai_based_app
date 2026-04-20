@@ -20,16 +20,11 @@ let cameraOpen = false; // guard against double-open
 
 export function renderReportPage() {
   const app = document.getElementById('app');
-  const randomLocation = getLocations()[Math.floor(Math.random() * getLocations().length)];
-  capturedFile = null;
-  capturedPreview = null;
-  cameraOpen = false;
-
-  // Mutable location data — can be updated by user
+  // Mutable location data — exact GPS will overwrite this
   const currentLocation = {
-    name: randomLocation.name,
-    lat: randomLocation.lat,
-    lng: randomLocation.lng,
+    name: "",
+    lat: null,
+    lng: null,
   };
 
   app.innerHTML = `
@@ -95,37 +90,51 @@ export function renderReportPage() {
   attachNavListeners();
   attachReportListeners(currentLocation);
 
-  // Auto-detect location using Geolocation API
+  // Auto-detect exact location using Geolocation API + Reverse Geocoding
   setTimeout(() => {
     const locInput = document.getElementById('location-input');
     const locCoords = document.getElementById('location-coords');
     
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           currentLocation.lat = position.coords.latitude;
           currentLocation.lng = position.coords.longitude;
-          currentLocation.name = "My Current Location";
           
-          if (locInput && locCoords) {
-            locInput.value = currentLocation.name;
-            locCoords.textContent = `${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}`;
+          if (locCoords) {
+             locCoords.textContent = `Exact GPS: ${currentLocation.lat}, ${currentLocation.lng}`;
           }
-          showNotification('Location detected successfully', 'success');
+
+          // Reverse geocode to get a real world address
+          try {
+             // Basic fetch to Nominatim (OSM)
+             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${currentLocation.lat}&lon=${currentLocation.lng}`);
+             const data = await res.json();
+             currentLocation.name = data.display_name || "Unknown Address";
+          } catch (err) {
+             console.warn("Reverse geocoding failed", err);
+             currentLocation.name = "My Current Location";
+          }
+          
+          if (locInput) {
+            locInput.value = currentLocation.name;
+          }
+          showNotification('Exact GPS location acquired', 'success');
         },
         (error) => {
-          console.warn('Geolocation failed or denied, using default:', error.message);
+          console.warn('Geolocation failed or denied:', error.message);
+          currentLocation.name = "Location Access Denied";
           if (locInput && locCoords) {
             locInput.value = currentLocation.name;
-            locCoords.textContent = `${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}`;
+            locCoords.textContent = "Please enable GPS or type your location manually.";
           }
         },
-        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     } else {
       if (locInput && locCoords) {
-        locInput.value = currentLocation.name;
-        locCoords.textContent = `${currentLocation.lat.toFixed(4)}, ${currentLocation.lng.toFixed(4)}`;
+        locInput.value = "GPS not supported";
+        locCoords.textContent = "---";
       }
     }
   }, 1000);

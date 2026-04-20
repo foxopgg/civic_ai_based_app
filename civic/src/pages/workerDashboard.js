@@ -18,8 +18,19 @@ export async function renderWorkerDashboard() {
 
   app.innerHTML = `
     ${renderNavbar()}
-    <div class="page-container fade-in" style="text-align:center;padding-top:100px">
-      <div class="spinner-dark" style="margin:0 auto;width:32px;height:32px"></div>
+    <div class="page-container fade-in">
+      <div class="dashboard-header" style="margin-bottom: 24px;">
+         <div class="skeleton" style="width:250px; height:40px; margin-bottom:8px; border-radius:4px"></div>
+         <div class="skeleton" style="width:350px; height:20px; border-radius:4px"></div>
+      </div>
+      <div class="glass-card" style="margin-bottom: 24px; padding: 20px; text-align: center;">
+         <div class="skeleton" style="width:120px; height:24px; margin: 0 auto 12px; border-radius:4px"></div>
+         <div style="display: flex; gap: 16px; justify-content: center;">
+            <div class="skeleton" style="width:120px; height:80px; border-radius:8px"></div>
+            <div class="skeleton" style="width:120px; height:80px; border-radius:8px"></div>
+            <div class="skeleton" style="width:120px; height:80px; border-radius:8px"></div>
+         </div>
+      </div>
     </div>
   `;
   attachNavListeners();
@@ -36,12 +47,12 @@ export async function renderWorkerDashboard() {
       <div class="dashboard-header" style="margin-bottom: 24px;">
         <div>
           <h1 class="page-title">Worker Dashboard</h1>
-          <p class="page-subtitle">Welcome, ${user.name} | ${user.work_type || 'Worker'} Specialist</p>
+          <p class="page-subtitle" style="color: var(--accent)">Welcome, ${user.name} | ${user.work_type || 'Worker'} Specialist</p>
         </div>
       </div>
 
-      <div class="card" style="margin-bottom: 24px; padding: 20px; text-align: center;">
-        <h3 style="margin-bottom: 12px; color: var(--primary)">Quick Stats</h3>
+      <div class="glass-card" style="margin-bottom: 24px; padding: 20px; text-align: center;">
+        <h3 style="margin-bottom: 12px; color: var(--accent)">Quick Stats</h3>
         <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
             <div style="padding: 12px 24px; background: rgba(33,150,243,0.1); border-radius: 8px;">
                 <p style="font-size: 2rem; font-weight: 800; color: #2196F3">${unassignedJobs.length}</p>
@@ -51,24 +62,27 @@ export async function renderWorkerDashboard() {
                 <p style="font-size: 2rem; font-weight: 800; color: #FFA000">${inProgress.length}</p>
                 <p style="font-size: 0.85rem; color: var(--text-muted)">Active Task</p>
             </div>
-            <div style="padding: 12px 24px; background: rgba(76,175,80,0.1); border-radius: 8px;">
-                <p style="font-size: 2rem; font-weight: 800; color: #4CAF50">${completed.length}</p>
+            <div style="padding: 12px 24px; background: rgba(34,197,94,0.1); border-radius: 8px;">
+                <p style="font-size: 2rem; font-weight: 800; color: var(--accent)">${completed.length}</p>
                 <p style="font-size: 0.85rem; color: var(--text-muted)">Completed</p>
             </div>
         </div>
       </div>
 
-      <div class="admin-tabs" style="margin-bottom: 24px; display: flex; justify-content: center;">
-        <button class="admin-tab ${currentTab === 'available' ? 'active' : ''}" data-tab="available">
+      <div class="admin-tabs" style="margin-bottom: 24px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+        <button class="admin-tab ${currentTab === 'available' ? 'active' : ''}" data-tab="available" style="border-radius: 20px">
           ${icons.alertCircle} Available Jobs <span class="tab-count">${unassignedJobs.length}</span>
         </button>
-        <button class="admin-tab ${currentTab === 'assigned' ? 'active' : ''}" data-tab="assigned">
-          ${icons.report} My Assignments <span class="tab-count">${issues.length}</span>
+        <button class="admin-tab ${currentTab === 'assigned' ? 'active' : ''}" data-tab="assigned" style="border-radius: 20px">
+          ${icons.clock} Active Tasks <span class="tab-count">${inProgress.length}</span>
+        </button>
+        <button class="admin-tab ${currentTab === 'completed' ? 'active' : ''}" data-tab="completed" style="border-radius: 20px">
+          ${icons.checkCircle} Completed Work <span class="tab-count">${completed.length}</span>
         </button>
       </div>
 
       <div id="worker-tab-content">
-        ${renderTabContent(currentTab, { unassignedJobs, issues, user })}
+        ${renderTabContent(currentTab, { unassignedJobs, inProgress, completed, user })}
       </div>
     </div>
   `;
@@ -80,7 +94,7 @@ export async function renderWorkerDashboard() {
 function renderTabContent(tab, data) {
   if (tab === 'available') {
     return data.unassignedJobs.length === 0 ? `
-      <div class="placeholder-card" style="text-align: center; padding: 40px; background: white; border-radius: 12px;">
+      <div class="placeholder-card glass-card" style="text-align: center; padding: 40px;">
         ${icons.success}
         <p style="margin-top: 12px; color: var(--text-muted)">No new jobs available for your work type.</p>
       </div>
@@ -89,10 +103,10 @@ function renderTabContent(tab, data) {
         ${data.unassignedJobs.map(issue => {
           const sevClass = (issue.severity || 'low').toLowerCase();
           return `
-          <div class="card fade-in" style="border-left: 4px solid var(--severity-${sevClass})">
+          <div class="glass-card fade-in" style="border-left: 4px solid var(--severity-${sevClass})">
               <div class="card-body">
                   <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px">
-                      <h3 style="font-size: 1.1rem; color: var(--textDark)">${issue.issue_type}</h3>
+                      <h3 style="font-size: 1.1rem; color: var(--text-light)">${issue.issue_type}</h3>
                       <span class="badge badge-reported">${issue.status}</span>
                   </div>
                   <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
@@ -102,7 +116,7 @@ function renderTabContent(tab, data) {
                       ${icons.location}
                       <span style="margin-left: 6px;">${issue.location}</span>
                   </div>
-                  <button class="btn btn-primary btn-sm btn-claim" data-issue-id="${issue.id}" style="width: 100%">Claim Job</button>
+                  <button class="btn btn-primary btn-sm btn-claim" data-issue-id="${issue.id}" style="width: 100%; border-radius: 20px;">Claim Job</button>
               </div>
           </div>`;
         }).join('')}
@@ -111,29 +125,63 @@ function renderTabContent(tab, data) {
   }
   
   if (tab === 'assigned') {
-    return data.issues.length === 0 ? `
-      <div class="placeholder-card" style="text-align: center; padding: 40px; background: white; border-radius: 12px;">
+    return data.inProgress.length === 0 ? `
+      <div class="placeholder-card glass-card" style="text-align: center; padding: 40px;">
         ${icons.success}
-        <p style="margin-top: 12px; color: var(--text-muted)">No active assignments. Claim a job first!</p>
+        <p style="margin-top: 12px; color: var(--text-muted)">No active tasks. Claim a job first!</p>
       </div>
     ` : `
       <div class="task-grid">
-        ${data.issues.map(issue => {
+        ${data.inProgress.map(issue => {
           const sevClass = (issue.severity || 'low').toLowerCase();
-          const statusClass = issue.status === 'Completed' ? 'completed' : 'progress';
           return `
-          <div class="card fade-in" style="cursor: pointer; border-left: 4px solid var(--severity-${sevClass})" onclick="window.location.hash='#worker-task?issueId=${issue.id}'">
+          <div class="glass-card fade-in" style="cursor: pointer; border-left: 4px solid var(--severity-${sevClass})" onclick="window.location.hash='#worker-task?issueId=${issue.id}'">
               <div class="card-body">
                   <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px">
-                      <h3 style="font-size: 1.1rem; color: var(--textDark)">${issue.issue_type}</h3>
-                      <span class="badge badge-${statusClass}">${issue.status}</span>
+                      <h3 style="font-size: 1.1rem; color: var(--text-light)">${issue.issue_type}</h3>
+                      <span class="badge badge-progress">${issue.status}</span>
                   </div>
                   <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                       ${issue.description || 'No description provided'}
                   </p>
-                  <div style="display:flex; align-items:center; font-size: 0.8rem; color: var(--text-muted)">
+                  <div style="display:flex; align-items:center; font-size: 0.8rem; color: var(--accent)">
                       ${icons.location}
                       <span style="margin-left: 6px;">${issue.location}</span>
+                  </div>
+              </div>
+          </div>`;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  if (tab === 'completed') {
+    return data.completed.length === 0 ? `
+      <div class="placeholder-card glass-card" style="text-align: center; padding: 40px;">
+        ${icons.success}
+        <p style="margin-top: 12px; color: var(--text-muted)">No completed work yet.</p>
+      </div>
+    ` : `
+      <div class="task-grid">
+        ${data.completed.map(issue => {
+          const dateStr = issue.created_at ? new Date(issue.created_at).toLocaleDateString() : 'Unknown Date';
+          return `
+          <div class="glass-card fade-in" style="border-left: 4px solid var(--accent)">
+              <div class="card-body">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px">
+                      <h3 style="font-size: 1.1rem; color: var(--text-light)">${issue.issue_type}</h3>
+                      <span class="badge badge-completed">${issue.status}</span>
+                  </div>
+                  <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                      ${issue.description || 'No description provided'}
+                  </p>
+                  <div style="display:flex; justify-content:space-between; align-items:center; font-size: 0.8rem;">
+                      <div style="color: var(--text-muted); display:flex; align-items:center">
+                          ${icons.location} <span style="margin-left: 4px;">${issue.location}</span>
+                      </div>
+                      <div style="color: var(--accent); font-weight: 600;">
+                          ${dateStr}
+                      </div>
                   </div>
               </div>
           </div>`;
@@ -146,6 +194,8 @@ function renderTabContent(tab, data) {
 function attachDashboardListeners(user) {
   document.querySelectorAll('.admin-tab').forEach(tab => {
     tab.addEventListener('click', () => {
+      document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
       currentTab = tab.getAttribute('data-tab');
       renderWorkerDashboard();
     });
@@ -153,13 +203,14 @@ function attachDashboardListeners(user) {
 
   document.querySelectorAll('.btn-claim').forEach(btn => {
     btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
       const issueId = btn.getAttribute('data-issue-id');
       const originalText = btn.innerHTML;
-      btn.innerHTML = '<div class="spinner"></div>';
+      btn.innerHTML = '<div class="spinner" style="margin: 0 auto; border-color: transparent white white white;"></div>';
       btn.disabled = true;
       try {
         await claimJob(issueId, user.id, user.name);
-        showNotification('Job claimed successfully!', 'success');
+        showNotification('Task claimed! Moved to Active Tasks.', 'success');
         currentTab = 'assigned';
         renderWorkerDashboard();
       } catch (err) {

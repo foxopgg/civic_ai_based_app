@@ -12,6 +12,19 @@ export async function renderDashboard() {
   const app = document.getElementById('app');
   const user = getUser();
 
+  if (!user) {
+    navigate('login');
+    return;
+  }
+  if (user.role === 'worker') {
+    navigate('worker-dashboard');
+    return;
+  }
+  if (user.role === 'admin') {
+    navigate('admin');
+    return;
+  }
+
   // Show loading state first
   app.innerHTML = `
     ${renderNavbar()}
