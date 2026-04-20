@@ -124,15 +124,54 @@ export async function getReportedIssues() {
   return getIssuesByStatus('Reported');
 }
 
-export async function getWorkerIssues(workerName) {
+export async function getWorkerIssues(workerId) {
   const { data, error } = await supabase
     .from('reports')
     .select('*')
-    .eq('assigned_worker', workerName)
+    .eq('assigned_worker_id', workerId)
     .order('created_at', { ascending: false });
 
   if (error) { console.error('getWorkerIssues error:', error); return []; }
   return data || [];
+}
+
+export function getIssueTypesForWorkType(workType) {
+  const map = {
+    'Electrical': ['Streetlight'],
+    'Road Repair': ['Road Damage', 'Pothole'],
+    'Garbage Management': ['Garbage'],
+    'Plumbing': ['Water Leakage']
+  };
+  return map[workType] || [];
+}
+
+export async function getUnassignedWorkerJobs(workType) {
+  const matchingTypes = getIssueTypesForWorkType(workType);
+  if (matchingTypes.length === 0) return [];
+  const { data, error } = await supabase
+    .from('reports')
+    .select('*')
+    .eq('status', 'Reported')
+    .in('issue_type', matchingTypes)
+    .order('created_at', { ascending: false });
+
+  if (error) { console.error('getUnassignedWorkerJobs error:', error); return []; }
+  return data || [];
+}
+
+export async function claimJob(issueId, workerId, workerName) {
+  let { data, error } = await supabase
+    .from('reports')
+    .update({
+      status: 'Assigned',
+      assigned_worker_id: workerId,
+      assigned_worker: workerName
+    })
+    .eq('id', issueId)
+    .select()
+    .single();
+  if (error) { console.error('claimJob error:', error); throw error; }
+  return data;
 }
 
 export async function updateWorkerTask(issueId, updates) {
@@ -288,6 +327,7 @@ export async function setCompletionProof(issueId, proofUrl) {
     .update({
       status: 'Completed',
       completion_proof_url: proofUrl,
+      after_image_url: proofUrl,
     })
     .eq('id', issueId)
     .select()

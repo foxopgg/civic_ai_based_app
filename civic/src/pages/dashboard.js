@@ -131,22 +131,24 @@ function renderIssueCard(issue, idx) {
 }
 
 function renderCompletedCard(issue, idx) {
-  const hasImage = issue.image_url && !issue.image_url.includes('undefined');
-  const hasProof = issue.completion_proof_url && !issue.completion_proof_url.includes('undefined');
+  const beforeUrl = issue.before_image_url || issue.image_url;
+  const afterUrl = issue.after_image_url || issue.completion_proof_url;
+  const hasBefore = beforeUrl && !beforeUrl.includes('undefined');
+  const hasAfter = afterUrl && !afterUrl.includes('undefined');
 
   return `
     <div class="card completed-card slide-up" style="animation-delay: ${idx * 0.08}s" data-issue-id="${issue.id}" id="completed-card-${issue.id}">
       <div class="before-after">
         <div class="before-after-item">
-          ${hasImage
-            ? `<img src="${issue.image_url}" alt="Before" loading="lazy" />`
+          ${hasBefore
+            ? `<img src="${beforeUrl}" alt="Before" loading="lazy" />`
             : `<div style="background: linear-gradient(135deg, #795548, #8D6E63); width:100%; height:100%; display:flex; align-items:center; justify-content:center"><span style="color:rgba(255,255,255,0.6); font-size:0.7rem; font-weight:600">Before</span></div>`
           }
           <span class="before-after-label before-label">${t('beforeLabel')}</span>
         </div>
         <div class="before-after-item">
-          ${hasProof
-            ? `<img src="${issue.completion_proof_url}" alt="After" loading="lazy" />`
+          ${hasAfter
+            ? `<img src="${afterUrl}" alt="After" loading="lazy" />`
             : `<div style="background: linear-gradient(135deg, #A5D6A7, #81C784); width:100%; height:100%; display:flex; align-items:center; justify-content:center"><span style="color:rgba(255,255,255,0.6); font-size:0.7rem; font-weight:600">After</span></div>`
           }
           <span class="before-after-label after-label">${t('afterLabel')}</span>

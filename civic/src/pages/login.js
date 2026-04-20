@@ -107,6 +107,16 @@ export function renderLogin() {
               </select>
             </div>
 
+            <div class="form-group" id="work-type-group" style="display: none;">
+              <label class="form-label" for="login-work-type">Type of Work</label>
+              <select class="form-select" id="login-work-type">
+                <option value="Electrical">Electrical</option>
+                <option value="Road Repair">Road Repair</option>
+                <option value="Garbage Management">Garbage Management</option>
+                <option value="Plumbing">Plumbing</option>
+              </select>
+            </div>
+
             <div class="otp-status" id="otp-status"></div>
 
             <button class="btn btn-primary btn-lg" style="width: 100%" id="btn-send-otp">
@@ -219,6 +229,7 @@ function attachLoginListeners() {
             phone: user.phone,
             language: user.language,
             role: user.role,
+            work_type: user.work_type,
           });
 
           showNotification(`Welcome back, ${user.name}!`, 'success');
@@ -253,6 +264,11 @@ function attachLoginListeners() {
         document.querySelectorAll('.role-option').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         selectedRole = btn.getAttribute('data-role');
+        
+        const workTypeGroup = document.getElementById('work-type-group');
+        if (workTypeGroup) {
+          workTypeGroup.style.display = selectedRole === 'worker' ? 'block' : 'none';
+        }
       });
     });
 
@@ -266,6 +282,7 @@ function attachLoginListeners() {
       const phone = document.getElementById('login-phone').value.trim();
       const password = document.getElementById('login-password-up').value.trim();
       const lang = document.getElementById('login-language').value;
+      const workType = document.getElementById('login-work-type')?.value;
 
       if (!name || !username || !phone || !password) {
         showNotification('Please fill all fields', 'warning');
@@ -304,7 +321,7 @@ function attachLoginListeners() {
           return;
         }
 
-        pendingSignupData = { name, username, phone, password, role: selectedRole, language: lang };
+        pendingSignupData = { name, username, phone, password, role: selectedRole, language: lang, work_type: selectedRole === 'worker' ? workType : null };
         generatedOTP = '1111';
 
         const status = document.getElementById('otp-status');
@@ -367,6 +384,7 @@ function attachLoginListeners() {
               phone: pendingSignupData.phone,
               role: pendingSignupData.role,
               language: pendingSignupData.language,
+              work_type: pendingSignupData.work_type,
             })
             .select()
             .single();
@@ -380,6 +398,7 @@ function attachLoginListeners() {
             phone: newUser.phone,
             language: newUser.language,
             role: newUser.role,
+            work_type: newUser.work_type,
           });
 
           showNotification(`Account created successfully! Hello ${newUser.name}!`, 'success');

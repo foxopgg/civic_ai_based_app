@@ -16,7 +16,10 @@ CREATE TABLE IF NOT EXISTS reports (
   status TEXT NOT NULL DEFAULT 'Reported',
   estimated_time TEXT,
   assigned_worker TEXT,
+  assigned_worker_id UUID,
   completion_proof_url TEXT,
+  before_image_url TEXT,
+  after_image_url TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

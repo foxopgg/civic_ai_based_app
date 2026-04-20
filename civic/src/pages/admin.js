@@ -443,19 +443,21 @@ function renderWipCard(issue, idx) {
 }
 
 function renderCompletedAdminCard(issue, idx) {
-  const hasImage = issue.image_url && !issue.image_url.includes('undefined');
-  const hasProof = issue.completion_proof_url && !issue.completion_proof_url.includes('undefined');
+  const beforeUrl = issue.before_image_url || issue.image_url;
+  const afterUrl = issue.after_image_url || issue.completion_proof_url;
+  const hasBefore = beforeUrl && !beforeUrl.includes('undefined');
+  const hasAfter = afterUrl && !afterUrl.includes('undefined');
 
   return `
     <div class="admin-issue-card slide-up completed-admin-card" style="animation-delay:${idx*0.05}s; border-left: 4px solid var(--secondary)" id="completed-admin-${issue.id}">
       <div class="admin-issue-image" style="width:160px">
         <div class="before-after" style="display:grid;grid-template-columns:1fr 1fr;gap:2px;height:100%">
           <div style="position:relative;overflow:hidden">
-            ${hasImage ? `<img src="${issue.image_url}" alt="Before" style="width:100%;height:100%;object-fit:cover" loading="lazy" />` : `<div style="background:linear-gradient(135deg,#795548,#8D6E63);height:100%"></div>`}
+            ${hasBefore ? `<img src="${beforeUrl}" alt="Before" style="width:100%;height:100%;object-fit:cover" loading="lazy" />` : `<div style="background:linear-gradient(135deg,#795548,#8D6E63);height:100%"></div>`}
             <span style="position:absolute;bottom:2px;left:2px;font-size:0.55rem;font-weight:700;background:rgba(229,57,53,0.85);color:white;padding:1px 4px;border-radius:3px">${t('beforeLabel')}</span>
           </div>
           <div style="position:relative;overflow:hidden">
-            ${hasProof ? `<img src="${issue.completion_proof_url}" alt="After" style="width:100%;height:100%;object-fit:cover" loading="lazy" />` : `<div style="background:linear-gradient(135deg,#A5D6A7,#81C784);height:100%"></div>`}
+            ${hasAfter ? `<img src="${afterUrl}" alt="After" style="width:100%;height:100%;object-fit:cover" loading="lazy" />` : `<div style="background:linear-gradient(135deg,#A5D6A7,#81C784);height:100%"></div>`}
             <span style="position:absolute;bottom:2px;left:2px;font-size:0.55rem;font-weight:700;background:rgba(46,125,50,0.85);color:white;padding:1px 4px;border-radius:3px">${t('afterLabel')}</span>
           </div>
         </div>

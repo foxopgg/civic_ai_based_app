@@ -29,7 +29,7 @@ export async function renderWorkerTask(data = {}) {
   attachNavListeners();
 
   const issue = await getIssueById(issueId);
-  if (!issue || issue.assigned_worker !== user.name) {
+  if (!issue || (issue.assigned_worker_id !== user.id && issue.assigned_worker !== user.name)) {
     navigate('worker-dashboard');
     return;
   }
@@ -85,15 +85,15 @@ export async function renderWorkerTask(data = {}) {
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
             <div class="upload-proof" id="upload-before" style="flex-direction: column; cursor: pointer;">
-                ${issue.worker_before_pic_url 
-                    ? `<img src="${issue.worker_before_pic_url}" alt="Before" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" />` 
+                ${issue.before_image_url 
+                    ? `<img src="${issue.before_image_url}" alt="Before" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" />` 
                     : `<div style="text-align:center;">${icons.camera}<p style="font-size:0.8rem; margin-top:8px">Upload Before</p></div>`
                 }
             </div>
             
             <div class="upload-proof" id="upload-after" style="flex-direction: column; cursor: pointer;">
-                ${issue.worker_after_pic_url 
-                    ? `<img src="${issue.worker_after_pic_url}" alt="After" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" />` 
+                ${issue.after_image_url 
+                    ? `<img src="${issue.after_image_url}" alt="After" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" />` 
                     : `<div style="text-align:center;">${icons.camera}<p style="font-size:0.8rem; margin-top:8px">Upload After</p></div>`
                 }
             </div>
@@ -189,11 +189,11 @@ function attachWorkerTaskListeners(issue) {
             }
 
             if (beforeFile) {
-                updates.worker_before_pic_url = await uploadProofImage(beforeFile);
+                updates.before_image_url = await uploadProofImage(beforeFile);
             }
             if (afterFile) {
-                updates.worker_after_pic_url = await uploadProofImage(afterFile);
-                updates.completion_proof_url = updates.worker_after_pic_url; // sync for backwards compatibility
+                updates.after_image_url = await uploadProofImage(afterFile);
+                updates.completion_proof_url = updates.after_image_url; // sync for backwards compatibility
             }
 
             await updateWorkerTask(issue.id, updates);

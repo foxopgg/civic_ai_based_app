@@ -67,3 +67,9 @@ ALTER TABLE reports ADD COLUMN IF NOT EXISTS worker_action_time TIMESTAMPTZ;
 -- User Registration additions
 ALTER TABLE users ADD COLUMN IF NOT EXISTS username TEXT UNIQUE;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS password TEXT;
+
+-- Worker workflow additions
+ALTER TABLE users ADD COLUMN IF NOT EXISTS work_type TEXT;
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS assigned_worker_id UUID;
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS before_image_url TEXT;
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS after_image_url TEXT;
