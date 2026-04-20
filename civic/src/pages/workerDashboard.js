@@ -88,23 +88,23 @@ function renderTabContent(tab, data) {
       <div class="task-grid">
         ${data.unassignedJobs.map(issue => {
           const sevClass = (issue.severity || 'low').toLowerCase();
-          return \`
-          <div class="card fade-in" style="border-left: 4px solid var(--severity-\${sevClass})">
+          return `
+          <div class="card fade-in" style="border-left: 4px solid var(--severity-${sevClass})">
               <div class="card-body">
                   <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px">
-                      <h3 style="font-size: 1.1rem; color: var(--textDark)">\${issue.issue_type}</h3>
-                      <span class="badge badge-reported">\${issue.status}</span>
+                      <h3 style="font-size: 1.1rem; color: var(--textDark)">${issue.issue_type}</h3>
+                      <span class="badge badge-reported">${issue.status}</span>
                   </div>
                   <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                      \${issue.description || 'No description provided'}
+                      ${issue.description || 'No description provided'}
                   </p>
                   <div style="display:flex; align-items:center; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px;">
-                      \${icons.location}
-                      <span style="margin-left: 6px;">\${issue.location}</span>
+                      ${icons.location}
+                      <span style="margin-left: 6px;">${issue.location}</span>
                   </div>
-                  <button class="btn btn-primary btn-sm btn-claim" data-issue-id="\${issue.id}" style="width: 100%">Claim Job</button>
+                  <button class="btn btn-primary btn-sm btn-claim" data-issue-id="${issue.id}" style="width: 100%">Claim Job</button>
               </div>
-          </div>\`;
+          </div>`;
         }).join('')}
       </div>
     `;
@@ -121,22 +121,22 @@ function renderTabContent(tab, data) {
         ${data.issues.map(issue => {
           const sevClass = (issue.severity || 'low').toLowerCase();
           const statusClass = issue.status === 'Completed' ? 'completed' : 'progress';
-          return \`
-          <div class="card fade-in" style="cursor: pointer; border-left: 4px solid var(--severity-\${sevClass})" onclick="window.location.hash='#worker-task?issueId=\${issue.id}'">
+          return `
+          <div class="card fade-in" style="cursor: pointer; border-left: 4px solid var(--severity-${sevClass})" onclick="window.location.hash='#worker-task?issueId=${issue.id}'">
               <div class="card-body">
                   <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px">
-                      <h3 style="font-size: 1.1rem; color: var(--textDark)">\${issue.issue_type}</h3>
-                      <span class="badge badge-\${statusClass}">\${issue.status}</span>
+                      <h3 style="font-size: 1.1rem; color: var(--textDark)">${issue.issue_type}</h3>
+                      <span class="badge badge-${statusClass}">${issue.status}</span>
                   </div>
                   <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                      \${issue.description || 'No description provided'}
+                      ${issue.description || 'No description provided'}
                   </p>
                   <div style="display:flex; align-items:center; font-size: 0.8rem; color: var(--text-muted)">
-                      \${icons.location}
-                      <span style="margin-left: 6px;">\${issue.location}</span>
+                      ${icons.location}
+                      <span style="margin-left: 6px;">${issue.location}</span>
                   </div>
               </div>
-          </div>\`;
+          </div>`;
         }).join('')}
       </div>
     `;
